@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Oyuncuları Seç</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        form {
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .oyuncu {
+            display: block;
+            margin: 5px 0;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h2>Oyuna Başlamak İçin 4 Oyuncu Seçin</h2>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% for oyuncu in oyuncular %}
+            <label class="oyuncu">
+                <input type="checkbox" name="secili_oyuncular" value="{{ oyuncu }}">
+                {{ oyuncu }}
+            </label>
+        {% endfor %}
+        <br>
+        <button type="submit">Oyuna Başla</button>
+    </form>
+</body>
+</html>

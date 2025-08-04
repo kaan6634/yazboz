@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ana Sayfa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="home-container">
+        <h1>Hoş Geldin, {{ username }} 👋</h1>
+        <p>Okey Yazboz Uygulamasına Hoş Geldin</p>
+
+        <div class="buttons">
+            <a href="{{ url_for('new_game') }}" class="start-button">+ Yeni Oyuna Başla</a>
+            <a href="{{ url_for('logout') }}" class="logout-button">Çıkış Yap</a>
+        </div>
+    </div>
+</body>
+</html>

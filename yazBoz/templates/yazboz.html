@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yazboz – El {{ history|length + 1 }}{% if (history|length + 1) % 4 == 1 %} (Jig El){% endif %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        h2, h3 {
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .jig {
+            background-color: #ffeecc;
+        }
+
+        .jig-el-label {
+            color: crimson;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .oyuncu-btn {
+            width: 100%;
+            padding: 8px;
+            font-size: 1em;
+        }
+
+        .active {
+            background-color: lightblue;
+        }
+
+        #input-screen {
+            width: 100%;
+            max-width: 200px;
+            margin: 15px auto 10px;
+            padding: 12px;
+            font-size: 1.4em;
+            text-align: center;
+            border: 2px solid #999;
+            background-color: #f0f0f0;
+            border-radius: 6px;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-width: 250px;
+            margin: 0 auto 15px;
+        }
+
+        .numpad button {
+            padding: 16px;
+            font-size: 1.2em;
+            border-radius: 6px;
+            border: none;
+            background-color: #ddd;
+            transition: background-color 0.3s;
+        }
+
+        .numpad button:hover {
+            background-color: #ccc;
+        }
+
+        .center-buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .center-buttons button, .center-buttons a {
+            margin: 8px;
+            padding: 10px 20px;
+            font-size: 1em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .reset-button {
+            background-color: crimson;
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 600px) {
+            h2, h3 {
+                font-size: 1.2em;
+            }
+
+            th, td {
+                padding: 6px;
+                font-size: 0.8em;
+            }
+
+            .numpad button {
+                padding: 14px;
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>
+        Yazboz – El {{ history|length + 1 }}
+        {% if (history|length + 1) % 4 == 1 %}
+        <span class="jig-el-label">(Jig El)</span>
+        {% endif %}
+    </h2>
+
+    <form method="POST" action="{{ url_for('add_scores') }}">
+        <table>
+            <tr>
+                <th>Oyuncu</th>
+                {% for i in range(players|length) %}
+                <th>
+                    <button type="button" onclick="oyuncuSec({{ i }})" id="sec{{ i }}" class="oyuncu-btn">
+                        {{ players[i] }}
+                    </button>
+                </th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Ceza Puanı</td>
+                {% for i in range(players|length) %}
+                <td><b id="puan_text{{ i }}">0</b></td>
+                {% endfor %}
+            </tr>
+        </table>
+
+        {% for i in range(players|length) %}
+        <input type="hidden" name="puan{{ i }}" id="puan{{ i }}" value="0">
+        {% endfor %}
+
+        <div id="input-screen">0</div>
+        <div class="numpad">
+            <button type="button" onclick="numpad(1)">1</button>
+            <button type="button" onclick="numpad(2)">2</button>
+            <button type="button" onclick="numpad(3)">3</button>
+            <button type="button" onclick="numpad(4)">4</button>
+            <button type="button" onclick="numpad(5)">5</button>
+            <button type="button" onclick="numpad(6)">6</button>
+            <button type="button" onclick="numpad(7)">7</button>
+            <button type="button" onclick="numpad(8)">8</button>
+            <button type="button" onclick="numpad(9)">9</button>
+            <button type="button" onclick="numpad('del')">⌫</button>
+            <button type="button" onclick="numpad(0)">0</button>
+            <button type="button" onclick="numpad('ok')">OK</button>
+        </div>
+
+        <div class="center-buttons">
+            <button type="submit">Eli Kaydet</button>
+        </div>
+    </form>
+
+    <h3>Geçmiş Turlar</h3>
+    <table>
+        <tr>
+            <th>El</th>
+            {% for player in players %}
+            <th>{{ player }}</th>
+            {% endfor %}
+        </tr>
+        {% for i in range(history|length) %}
+        <tr class="{% if (i + 1) % 4 == 1 %}jig{% endif %}">
+            <td>
+                {{ i + 1 }}
+                {% if (i + 1) % 4 == 1 %}
+                <span class="jig-el-label">(Jig El)</span>
+                {% endif %}
+            </td>
+            {% for puan in history[i] %}
+            <td>{{ puan }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="center-buttons">
+        <form method="GET" action="{{ url_for('reset_game') }}" style="display:inline;">
+            <button type="submit" class="reset-button">Oyunu Sıfırla</button>
+        </form>
+        <a href="{{ url_for('home') }}">Ana Sayfa</a>
+    </div>
+
+    <script>
+        let aktifOyuncu = null;
+        let currentInput = "0";
+
+        function oyuncuSec(index) {
+            aktifOyuncu = index;
+            for (let i = 0; i < {{ players|length }}; i++) {
+                document.getElementById('sec' + i).classList.remove('active');
+            }
+            document.getElementById('sec' + index).classList.add('active');
+        }
+
+        function numpad(value) {
+            if (aktifOyuncu === null) {
+                alert("Lütfen önce bir oyuncu seçin.");
+                return;
+            }
+
+            if (value === 'del') {
+                currentInput = currentInput.slice(0, -1) || "0";
+            } else if (value === 'ok') {
+                const val = parseInt(currentInput);
+                document.getElementById("puan" + aktifOyuncu).value = val;
+                document.getElementById("puan_text" + aktifOyuncu).innerText = val;
+                currentInput = "0";
+            } else {
+                if (currentInput === "0") currentInput = String(value);
+                else currentInput += String(value);
+            }
+
+            document.getElementById("input-screen").innerText = currentInput;
+        }
+    </script>
+</body>
+</html>
