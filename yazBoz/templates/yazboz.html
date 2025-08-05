@@ -16,19 +16,19 @@
         }
         h2, h3 {
             text-align: center;
-            font-size: 1.5em;
+            font-size: 1.6em;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 10px 0;
-            font-size: 0.9em;
+            font-size: 1em;
         }
 
         th, td {
             border: 1px solid #999;
-            padding: 8px;
+            padding: 10px;
             text-align: center;
         }
 
@@ -39,50 +39,43 @@
         .jig-el-label {
             color: crimson;
             font-weight: bold;
-            font-size: 0.9em;
         }
 
         .oyuncu-btn {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             font-size: 1em;
-        }
-
-        .active {
-            background-color: lightblue;
-        }
-
-        #input-screen {
-            width: 100%;
-            max-width: 200px;
-            margin: 15px auto 10px;
-            padding: 12px;
-            font-size: 1.4em;
-            text-align: center;
-            border: 2px solid #999;
             background-color: #f0f0f0;
-            border-radius: 6px;
+            border: 1px solid #ccc;
+            cursor: pointer;
         }
 
-        .numpad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            max-width: 250px;
-            margin: 0 auto 15px;
+        .oyuncu-btn.active {
+            background-color: lightblue;
+            font-weight: bold;
         }
 
-        .numpad button {
-            padding: 16px;
-            font-size: 1.2em;
-            border-radius: 6px;
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .action-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
             border: none;
-            background-color: #ddd;
-            transition: background-color 0.3s;
+            color: white;
+            border-radius: 5px;
         }
 
-        .numpad button:hover {
-            background-color: #ccc;
+        .ceza-btn {
+            background-color: #e74c3c;
+        }
+
+        .odul-btn {
+            background-color: #2ecc71;
         }
 
         .center-buttons {
@@ -105,19 +98,79 @@
             border-radius: 6px;
         }
 
+        /* MODAL TASARIMI */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .modal input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1.1em;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modal button {
+            margin: 10px 5px 0 5px;
+            padding: 8px 16px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .modal .ok-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .modal .cancel-btn {
+            background-color: #ccc;
+        }
+
         @media (max-width: 600px) {
             h2, h3 {
-                font-size: 1.2em;
+                font-size: 1.3em;
             }
 
             th, td {
                 padding: 6px;
-                font-size: 0.8em;
+                font-size: 0.9em;
             }
 
-            .numpad button {
-                padding: 14px;
-                font-size: 1.1em;
+            .oyuncu-btn {
+                font-size: 0.9em;
+                padding: 8px;
+            }
+
+            .action-buttons button {
+                padding: 8px 16px;
+                font-size: 0.95em;
+            }
+
+            .center-buttons button, .center-buttons a {
+                padding: 8px 16px;
+                font-size: 0.95em;
             }
         }
     </style>
@@ -154,20 +207,9 @@
         <input type="hidden" name="puan{{ i }}" id="puan{{ i }}" value="0">
         {% endfor %}
 
-        <div id="input-screen">0</div>
-        <div class="numpad">
-            <button type="button" onclick="numpad(1)">1</button>
-            <button type="button" onclick="numpad(2)">2</button>
-            <button type="button" onclick="numpad(3)">3</button>
-            <button type="button" onclick="numpad(4)">4</button>
-            <button type="button" onclick="numpad(5)">5</button>
-            <button type="button" onclick="numpad(6)">6</button>
-            <button type="button" onclick="numpad(7)">7</button>
-            <button type="button" onclick="numpad(8)">8</button>
-            <button type="button" onclick="numpad(9)">9</button>
-            <button type="button" onclick="numpad('del')">⌫</button>
-            <button type="button" onclick="numpad(0)">0</button>
-            <button type="button" onclick="numpad('ok')">OK</button>
+        <div class="action-buttons">
+            <button type="button" class="ceza-btn" onclick="showModal('ceza')">Ceza</button>
+            <button type="button" class="odul-btn" onclick="showModal('odul')">Ödül</button>
         </div>
 
         <div class="center-buttons">
@@ -205,37 +247,65 @@
         <a href="{{ url_for('home') }}">Ana Sayfa</a>
     </div>
 
+    <!-- Modal HTML -->
+    <div id="puanModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage">Puanı gir:</p>
+            <input type="number" id="puanInput" />
+            <div>
+                <button class="ok-btn" onclick="applyPuan()">Tamam</button>
+                <button class="cancel-btn" onclick="closeModal()">İptal</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let aktifOyuncu = null;
-        let currentInput = "0";
+        let currentAction = null;
 
         function oyuncuSec(index) {
             aktifOyuncu = index;
-            for (let i = 0; i < {{ players|length }}; i++) {
+            const count = {{ players|length }};
+            for (let i = 0; i < count; i++) {
                 document.getElementById('sec' + i).classList.remove('active');
             }
             document.getElementById('sec' + index).classList.add('active');
         }
 
-        function numpad(value) {
+        function showModal(action) {
             if (aktifOyuncu === null) {
                 alert("Lütfen önce bir oyuncu seçin.");
                 return;
             }
+            currentAction = action;
+            document.getElementById("modalMessage").innerText = `${action === "ceza" ? "Ceza" : "Ödül"} puanını giriniz:`;
+            document.getElementById("puanInput").value = "";
+            document.getElementById("puanModal").style.display = "block";
+        }
 
-            if (value === 'del') {
-                currentInput = currentInput.slice(0, -1) || "0";
-            } else if (value === 'ok') {
-                const val = parseInt(currentInput);
-                document.getElementById("puan" + aktifOyuncu).value = val;
-                document.getElementById("puan_text" + aktifOyuncu).innerText = val;
-                currentInput = "0";
-            } else {
-                if (currentInput === "0") currentInput = String(value);
-                else currentInput += String(value);
+        function closeModal() {
+            document.getElementById("puanModal").style.display = "none";
+        }
+
+        function applyPuan() {
+            const input = parseInt(document.getElementById("puanInput").value);
+            if (isNaN(input)) return;
+
+            const currentVal = parseInt(document.getElementById("puan" + aktifOyuncu).value);
+            const updatedVal = currentAction === "ceza"
+                ? currentVal + input
+                : currentVal - input;
+
+            document.getElementById("puan" + aktifOyuncu).value = updatedVal;
+            document.getElementById("puan_text" + aktifOyuncu).innerText = updatedVal;
+            closeModal();
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("puanModal");
+            if (event.target == modal) {
+                closeModal();
             }
-
-            document.getElementById("input-screen").innerText = currentInput;
         }
     </script>
 </body>

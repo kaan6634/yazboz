@@ -2,8 +2,84 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ana Sayfa</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-image: url("static/background.png"); /* Görsel yolu */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .home-container {
+            background-color: rgba(255, 255, 255, 0.85); /* yarı saydam beyaz kutu */
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .start-button, .logout-button {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 1rem;
+            text-decoration: none;
+            color: white;
+            background-color: #28a745;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+        }
+
+        .start-button:hover {
+            background-color: #218838;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        @media (min-width: 600px) {
+            .buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="home-container">
